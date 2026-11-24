@@ -9,9 +9,13 @@ const storageKey = 'whizpic-studio-v2';
 const collection = Object.keys(worlds);
 const labels = ['Personagem', 'História', 'Dedicatória'];
 const tabs = [
-  ['home','⌂','Início'], ['collection','▤','Coleção'], ['library','▥','Meus livros'],
-  ['orders','◇','Pedidos'], ['profile','◉','Perfil']
+  ['home', 'Início', '<path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6"/>'],
+  ['collection', 'Coleção', '<path d="M12 6.5C9.5 4.6 6.5 4 3 5v14c3.5-1 6.5-.4 9 1.5 2.5-1.9 5.5-2.5 9-1.5V5c-3.5-1-6.5-.4-9 1.5zm0 0v14"/><path d="M6 9.5c1-.1 2 .1 3 .5m6 0c1-.4 2-.6 3-.5"/>'],
+  ['library', 'Meus livros', '<rect x="3.5" y="4.5" width="5" height="15" rx="1"/><rect x="8.5" y="4.5" width="5" height="15" rx="1"/><path d="m14.3 6.3 3.5-1.2a1 1 0 0 1 1.3.6l3.6 11.4a1 1 0 0 1-.6 1.2l-3.5 1.2a1 1 0 0 1-1.2-.6L13.7 7.6a1 1 0 0 1 .6-1.3zM5.9 8h.2m4.8 0h.2"/>'],
+  ['orders', 'Pedidos', '<path d="m12 3 8.5 4.8v8.4L12 21l-8.5-4.8V7.8L12 3zm-8.5 4.8 8.5 4.8 8.5-4.8M12 12.6V21M7.8 5.4l8.5 4.8"/>'],
+  ['profile', 'Perfil', '<circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/>']
 ];
+const backPath = '<path d="M19 12H5m6 6-6-6 6-6"/>';
 const statusText = {draft:'Rascunho',review:'Em revisão',approved:'Aprovado',ordered:'Pedido simulado'};
 let state = {account:null, books:[]};
 try { state = JSON.parse(localStorage.getItem(storageKey)) || state; } catch {}
@@ -138,15 +142,19 @@ function landing() {
   }
 }
 
-function desktopNav(active) {
-  return tabs.map(([path, icon, text]) => `<a class="app-nav-item" href="#/${path}" ${path === active ? 'aria-current="page"' : ''}><span aria-hidden="true">${icon}</span>${text}</a>`).join('');
+function navIcon(path) {
+  return `<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${path}</svg>`;
+}
+
+function appNav(active) {
+  return tabs.map(([path, text, icon]) => `<a class="app-nav-item" href="#/${path}" ${path === active ? 'aria-current="page"' : ''}><span class="nav-icon-tile">${navIcon(icon)}</span><span>${text}</span></a>`).join('');
 }
 
 function shell(active, markup) {
   const name = escapeHtml(state.account.name);
-  const nav = desktopNav(active);
+  const nav = appNav(active);
   site.innerHTML = `<div class="app-shell">
-    <aside class="sidebar"><a href="#/home" aria-label="WhizPic, início do estúdio">${brand}</a><nav aria-label="Estúdio">${nav}</nav><a class="back-site" href="#/">← Voltar ao site</a></aside>
+    <aside class="sidebar"><a href="#/home" aria-label="WhizPic, início do estúdio">${brand}</a><nav aria-label="Estúdio">${nav}</nav><a class="back-site" href="#/">${navIcon(backPath)} Voltar ao site</a></aside>
     <div class="app-body"><header class="app-header"><a class="mobile-brand" href="#/home">${brand}</a><span class="desktop-header">Estúdio WhizPic</span><a class="user-link" href="#/profile"><span class="avatar" aria-hidden="true">${name[0] || 'W'}</span><span>${name}</span></a></header>
     <main id="main" class="app-main">${markup}</main></div>
     <nav class="mobile-nav" aria-label="Estúdio no celular">${nav}</nav>
