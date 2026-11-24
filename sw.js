@@ -1,4 +1,4 @@
-const CACHE = 'whizpic-studio-3';
+const CACHE = 'whizpic-studio-4';
 const files = [
   './index.html','./style.css','./app.js','./reader.js','./stories.js','./manifest.webmanifest',
   './assets/kingdom.webp','./assets/castle.webp','./assets/space.webp','./assets/dino.webp','./assets/forest.webp',
