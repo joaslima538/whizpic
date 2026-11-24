@@ -2,6 +2,22 @@ import {worlds} from './stories.js';
 
 const stripCount = 14;
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const motionKey = 'whizpic-reader-motion';
+let motionPreference;
+try { motionPreference = localStorage.getItem(motionKey); } catch {}
+const animates = () => motionPreference ? motionPreference === 'on' : !reducedMotion.matches;
+
+function paintMotion(button) {
+  const enabled = animates();
+  button.setAttribute('aria-pressed', String(enabled));
+  button.firstElementChild.textContent = enabled ? 'Ligada' : 'Desligada';
+}
+
+function syncMotionControls() {
+  document.querySelectorAll('.reader-motion').forEach(paintMotion);
+}
+
+reducedMotion.addEventListener('change', syncMotionControls);
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export function mountReader(host, story) {
@@ -10,7 +26,7 @@ export function mountReader(host, story) {
   host.classList.add('reader');
   host.innerHTML = `
     <div class="reader-stage">
-      <div class="volume" tabindex="0" role="group" aria-label="Livro interativo. Use as setas para folhear.">
+      <div class="volume" tabindex="0" role="group" aria-label="Livro interativo. Toque nas folhas, arraste ou use as setas para folhear.">
         <div class="book-block">
           <div class="spread"></div>
           <div class="turn-bed" aria-hidden="true"></div>
@@ -23,6 +39,10 @@ export function mountReader(host, story) {
       <button type="button" class="round prev" aria-label="Página anterior">←</button>
       <span class="page-state" aria-live="polite"></span>
       <button type="button" class="round next" aria-label="Próxima página">→</button>
+    </div>
+    <div class="reader-options">
+      <span>Toque ou arraste pela borda da folha</span>
+      <button type="button" class="reader-motion">Animação 3D <span></span></button>
     </div>`;
 
   const volume = host.querySelector('.volume');
@@ -34,10 +54,17 @@ export function mountReader(host, story) {
   const prev = host.querySelector('.prev');
   const next = host.querySelector('.next');
   const status = host.querySelector('.page-state');
+  const motion = host.querySelector('.reader-motion');
+
+  motion.onclick = () => {
+    motionPreference = animates() ? 'off' : 'on';
+    try { localStorage.setItem(motionKey, motionPreference); } catch {}
+    syncMotionControls();
+  };
+  paintMotion(motion);
   let page = 0;
   let drag;
   let flip;
-  let suppressClick = false;
 
   function illustratedPage(index, cover = false) {
     const panel = document.createElement('div');
@@ -181,7 +208,7 @@ export function mountReader(host, story) {
   function settle(commit) {
     const from = flip.progress;
     const to = commit ? 1 - flip.start : flip.start;
-    const duration = reducedMotion.matches ? 0 : 190 + 610 * Math.abs(to - from);
+    const duration = animates() ? 230 + 700 * Math.abs(to - from) : 0;
     if (!duration || Math.abs(to - from) < .001) {
       finish(commit);
       return;
@@ -202,7 +229,7 @@ export function mountReader(host, story) {
   function move(direction) {
     if (drag || flip || (page === 0 && direction < 0)) return;
     const target = page === last && direction > 0 ? 0 : page + direction;
-    if (reducedMotion.matches) {
+    if (!animates()) {
       page = target;
       paint();
     } else {
@@ -213,7 +240,15 @@ export function mountReader(host, story) {
 
   prev.onclick = () => move(-1);
   next.onclick = () => move(1);
-  block.onclick = () => { if (!suppressClick && page === 0) move(1); };
+  function tapPage(clientX) {
+    if (page === 0) {
+      const cover = spread.firstElementChild.getBoundingClientRect();
+      if (clientX >= cover.left && clientX <= cover.right) move(1);
+      return;
+    }
+    const bounds = block.getBoundingClientRect();
+    move(clientX >= bounds.left + bounds.width / 2 ? 1 : -1);
+  }
   volume.onkeydown = event => {
     if (event.key === 'ArrowRight' || (page === 0 && ['Enter', ' '].includes(event.key))) {
       event.preventDefault();
@@ -227,7 +262,6 @@ export function mountReader(host, story) {
 
   block.onpointerdown = event => {
     if (flip || !event.isPrimary || event.button !== 0) return;
-    suppressClick = false;
     drag = {x:event.clientX, y:event.clientY, pointer:event.pointerId, direction:0};
     block.setPointerCapture(event.pointerId);
   };
@@ -239,7 +273,7 @@ export function mountReader(host, story) {
       const direction = dx < 0 ? 1 : -1;
       if (page === 0 && direction < 0) return;
       drag.direction = direction;
-      if (!reducedMotion.matches) begin(page === last && direction > 0 ? 0 : page + direction);
+      if (animates()) begin(page === last && direction > 0 ? 0 : page + direction);
     }
     if (flip) {
       const travel = clamp(-dx * drag.direction / (flip.width * 1.7), 0, .98);
@@ -257,12 +291,9 @@ export function mountReader(host, story) {
     drag = null;
     const distance = (x - event.clientX) * direction;
     const commit = distance > 32 && distance > Math.abs(event.clientY - y);
-    if (direction) {
-      suppressClick = true;
-      setTimeout(() => { suppressClick = false; }, 0);
-    }
     if (flip) settle(commit);
     else if (commit) move(direction);
+    else if (!direction && Math.hypot(event.clientX - x, event.clientY - y) <= 8) tapPage(event.clientX);
   };
   block.onpointercancel = block.onlostpointercapture = () => {
     if (!drag) return;
