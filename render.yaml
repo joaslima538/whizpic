@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: whizpic
+    runtime: static
+    buildCommand: mkdir -p dist && cp index.html style.css app.js reader.js stories.js manifest.webmanifest sw.js dist/ && cp -R assets dist/
+    staticPublishPath: ./dist
+    headers:
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
