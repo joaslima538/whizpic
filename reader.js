@@ -21,8 +21,8 @@ reducedMotion.addEventListener('change', syncMotionControls);
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export function mountReader(host, story) {
-  const {art} = worlds[story.world];
-  const last = story.pages.length;
+  const art = worlds[story.world]?.art;
+  const last = story.spreads?.length ?? story.pages.length;
   host.classList.add('reader');
   host.innerHTML = `
     <div class="reader-stage">
@@ -66,10 +66,29 @@ export function mountReader(host, story) {
   let drag;
   let flip;
 
+  function storyLeaf(index, side) {
+    const {title, body, image, alt} = story.spreads[index - 1][side];
+    const panel = document.createElement('div');
+    panel.className = `reader-story-leaf reader-story-${side}`;
+    const illustration = new Image();
+    illustration.src = image;
+    illustration.alt = alt;
+    const footer = document.createElement('div');
+    const heading = document.createElement('h3');
+    heading.textContent = title;
+    const copy = document.createElement('p');
+    copy.textContent = body;
+    footer.append(heading, copy);
+    panel.append(illustration, footer);
+    return panel;
+  }
+
   function illustratedPage(index, cover = false) {
+    if (!cover && story.spreads) return storyLeaf(index, 0);
     const panel = document.createElement('div');
     panel.className = cover ? 'reader-cover' : 'reader-art';
-    panel.style.backgroundImage = `url(assets/${art}.webp)`;
+    const image = cover && story.coverArt ? story.coverArt : `assets/${art}.webp`;
+    panel.style.backgroundImage = `url("${image}")`;
     if (cover) {
       const mark = document.createElement('small');
       const title = document.createElement('h3');
@@ -88,6 +107,7 @@ export function mountReader(host, story) {
   }
 
   function textPage(index) {
+    if (story.spreads) return storyLeaf(index, 1);
     const panel = document.createElement('div');
     panel.className = 'reader-paper';
     panel.innerHTML = '<span class="reader-chapter"></span><h3></h3><p></p>';
@@ -115,7 +135,8 @@ export function mountReader(host, story) {
     measure.className = 'reader-measure';
     measure.setAttribute('aria-hidden', 'true');
     measure.style.width = `${width}px`;
-    const pages = story.pages.map((_, index) => textPage(index + 1));
+    const pages = Array.from({length:last}, (_, index) => textPage(index + 1));
+    if (story.spreads) pages.push(...story.spreads.map((_, index) => storyLeaf(index + 1, 0)));
     const cover = illustratedPage(0, true);
     const samples = [...pages, cover];
     measure.append(...samples);

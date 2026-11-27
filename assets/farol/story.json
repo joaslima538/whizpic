@@ -1,0 +1,37 @@
+{
+  "title": "Nina, Theo e o Farol das Nuvens",
+  "pages": [
+    {
+      "title": "O farol apagou",
+      "body": "Nina estava desenhando o caminho até a praça quando a luz do farol sumiu. Theo parou de amarrar sua lanterna de papel. Lá no alto, os pássaros chamavam uns pelos outros.",
+      "place": "Praça da ilha, fim de tarde. Bandeirolas, barracas e farol escuro ao fundo.",
+      "wardrobe": "Nina usa suéter mostarda e presilhas amarelas. Theo usa suéter verde-petróleo.",
+      "acting": "O lápis para no meio do mapa. Theo afrouxa os dedos no cordão. Os dois erguem o olhar, assustados.",
+      "props": "Mapa aberto e lanterna amarela de papel, ainda apagada."
+    },
+    {
+      "title": "O caminho curto",
+      "body": "A trilha do farol tinha virado um riacho. Nina abriu o mapa debaixo do casaco. “A escada dos pescadores ainda tá seca”, disse ela. “Mas a gente vai precisar ir devagar.”",
+      "place": "Trilha costeira sob chuva. A escada de pedra aparece no alto, longe da água.",
+      "wardrobe": "Nina veste capa impermeável ocre sobre o suéter. Theo veste capa impermeável azul-marinho. Os capuzes ficam abaixados para preservar os rostos.",
+      "acting": "Nina inclina a cabeça para proteger o mapa. Theo se aproxima, atento e com os ombros encolhidos pela chuva.",
+      "props": "Mapa protegido pela capa e a mesma lanterna ainda apagada."
+    },
+    {
+      "title": "A luz emprestada",
+      "body": "No alto da torre, Theo ergueu sua lanterna junto ao vidro do farol. O primeiro pássaro virou na direção da luz. Nina abriu o mapa no chão e foi marcando, com o dedo, onde os outros podiam pousar.",
+      "place": "Interior da torre, já à noite. Vidro molhado, mar ao longe e um pássaro se aproximando.",
+      "wardrobe": "As mesmas capas de chuva, abertas e com os capuzes abaixados.",
+      "acting": "Theo fica em primeiro plano e busca o pássaro com o olhar. Nina, ao fundo, se ajoelha e aponta o lugar de pouso.",
+      "props": "A mesma lanterna agora acesa. Mapa aberto no chão."
+    },
+    {
+      "title": "A festa no telhado",
+      "body": "Quando o último pássaro chegou, Theo ouviu um piado bem acima da cabeça. Nina riu. “Acho que eles querem ver a festa daqui.” E os dois ficaram ali até a praça inteira se acender.",
+      "place": "Terraço protegido do farol. A chuva cede, a água reflete as luzes da praça e as aves repousam no parapeito.",
+      "wardrobe": "As capas permanecem sobre os ombros, abertas sobre os suéteres originais.",
+      "acting": "O corpo relaxa. Nina ri ao ver as aves e Theo sorri, acompanhando o som acima dele.",
+      "props": "Lanterna acesa entre os dois. Nina reabre o mapa no terraço."
+    }
+  ]
+}
