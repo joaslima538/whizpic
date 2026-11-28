@@ -13,7 +13,7 @@ const pages = story.pages.map((page, index) => ({
 mountReader(document.querySelector('#livro'), {
   title: story.title,
   coverArt: 'cover.webp',
-  spreads: [pages.slice(0,2), pages.slice(2,4)]
+  spreads: Array.from({length: pages.length / 2}, (_, index) => pages.slice(index * 2, index * 2 + 2))
 });
 
 const scenes = document.querySelector('#scene-list');
